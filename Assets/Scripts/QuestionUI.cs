@@ -1,13 +1,20 @@
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class QuestionUI : MonoBehaviour
 {
+    [Header("Object Bindings")]
     [SerializeField] private TextMeshProUGUI questionText;
     [SerializeField] private Button[] answerButtons;
 
+    [Header("Try Again Parameters")]
+    [SerializeField] private string tryAgainMessage;
+    [SerializeField] private float messageDisplayTime;
+
+    [Header("Variables for testing")]
     //Exposed currently for demo - would make this data driven / random in the future
     [SerializeField] private String[] potentialAnswers;
     [SerializeField] private int correctAnswerIdx;
@@ -63,6 +70,14 @@ public class QuestionUI : MonoBehaviour
 
     private void WrongAnswer()
     {
-        
+        StartCoroutine(TryAgainMessage());
+    }
+
+    private IEnumerator TryAgainMessage()
+    {
+        string curQuestion = questionText.text;
+        questionText.text = tryAgainMessage;
+        yield return new WaitForSeconds(messageDisplayTime);
+        questionText.text = curQuestion;
     }
 }
