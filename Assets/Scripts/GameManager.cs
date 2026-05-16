@@ -28,13 +28,19 @@ public class GameManager : MonoBehaviour
     private Vector3[] originalPositions;
     private Quaternion[] originalRotations;
     private GamePhase currentPhase;
-    private int CurrentScore;
+    private int currentScore;
+    private BallBehaviour ball;
+    private CharacterSpriteController spriteController;
 
     private void Start()
     {
         // Set the starting phase and trigger updates
         currentPhase = GamePhase.Tutorial;
         OnPhaseUpdated();
+
+        // Find game objects 
+        ball = FindAnyObjectByType<BallBehaviour>();
+        spriteController = FindAnyObjectByType<CharacterSpriteController>();
 
         // Store positions of objects for reference later
         Array.Resize(ref originalPositions, objectsToMove.Length);
@@ -62,8 +68,8 @@ public class GameManager : MonoBehaviour
 
     public void IncrementScore()
     {
-        ++CurrentScore;
-        scoreText.SetText(CurrentScore.ToString());
+        ++currentScore;
+        scoreText.SetText(currentScore.ToString());
     }
 
     private void OnPhaseUpdated()
@@ -77,24 +83,25 @@ public class GameManager : MonoBehaviour
                 shotControls.SetActive(false);
                 break;
             case GamePhase.Question:
+                ball.DisablePhysics();
                 tutorialWindow.SetActive(false);
                 questionWindow.SetActive(true);
                 shotControls.SetActive(false);
                 break;
             case GamePhase.Playing:
-                MoveCharacters();
                 tutorialWindow.SetActive(false);
                 questionWindow.SetActive(false);
                 shotControls.SetActive(true);
+                MoveCharacters();
                 break;
         }
     }
 
     private void MoveCharacters()
     {
-        // Reset the basketball
-        BallBehaviour ball = FindAnyObjectByType<BallBehaviour>();
+        // Reset game objects
         ball?.ResetObject();
+        spriteController.ResetToDefault();
 
         float translationAmount = UnityEngine.Random.Range(-movementRange, movementRange);
         for(int curIdx = 0; curIdx < objectsToMove.Length; ++curIdx)

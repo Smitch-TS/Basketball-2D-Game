@@ -7,8 +7,13 @@ using UnityEngine.UI;
 public class QuestionUI : MonoBehaviour
 {
     [Header("Object Bindings")]
-    [SerializeField] private TextMeshProUGUI questionText;
+    [SerializeField] private TextMeshProUGUI questionTextBox;
     [SerializeField] private Button[] answerButtons;
+
+    [Header("Sound Effects")]
+    [SerializeField] private AudioClip correctSound;
+    [SerializeField] private AudioClip incorrectSound;
+    [SerializeField] private AudioSource audioSource;
 
     [Header("Try Again Parameters")]
     [SerializeField] private string tryAgainMessage;
@@ -16,6 +21,7 @@ public class QuestionUI : MonoBehaviour
 
     [Header("Variables for testing")]
     //Exposed currently for demo - would make this data driven / random in the future
+    [SerializeField] private string questionText;
     [SerializeField] private String[] potentialAnswers;
     [SerializeField] private int correctAnswerIdx;
 
@@ -33,6 +39,8 @@ public class QuestionUI : MonoBehaviour
         //
         for (int curIdx = 0; curIdx < potentialAnswers.Length; ++curIdx)
         {
+            questionTextBox.text = questionText;
+
             if (curIdx < answerButtons.Length)
             {
                 // Set button to active and update the text on the button
@@ -64,20 +72,21 @@ public class QuestionUI : MonoBehaviour
 
     private void CorrectAnswer()
     {
+        audioSource.PlayOneShot(correctSound);
         GameManager gameManager = FindAnyObjectByType<GameManager>();
         gameManager.AdvanceGamePhase();
     }
 
     private void WrongAnswer()
     {
+        audioSource.PlayOneShot(incorrectSound);
         StartCoroutine(TryAgainMessage());
     }
 
     private IEnumerator TryAgainMessage()
     {
-        string curQuestion = questionText.text;
-        questionText.text = tryAgainMessage;
+        questionTextBox.text = tryAgainMessage;
         yield return new WaitForSeconds(messageDisplayTime);
-        questionText.text = curQuestion;
+        questionTextBox.text = questionText;
     }
 }

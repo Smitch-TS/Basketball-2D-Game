@@ -4,13 +4,16 @@ public class BallBehaviour : MonoBehaviour
 {
     [SerializeField] public GameObject arrowArm;
 
+
+    private AudioSource audioSource;
     public Rigidbody2D rb; 
     private Transform originalTransform;
 
     private void Start()
     {
         originalTransform = transform;
-        rb = GetComponent<Rigidbody2D>();        
+        rb = GetComponent<Rigidbody2D>();   
+        audioSource = GetComponent<AudioSource>();     
     }
 
     public void EnablePhysics()
@@ -22,13 +25,18 @@ public class BallBehaviour : MonoBehaviour
     public void DisablePhysics()
     {
         rb.simulated = false;
-        arrowArm.SetActive(true);
     }
 
     public void ResetObject()
     {
         DisablePhysics();
+        arrowArm.SetActive(true);
         transform.position = originalTransform.position;
         transform.rotation = originalTransform.rotation;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        audioSource.PlayOneShot(audioSource.clip);
     }
 }

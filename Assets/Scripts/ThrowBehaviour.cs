@@ -13,15 +13,27 @@ public class ThrowBehaviour : MonoBehaviour, IPointerDownHandler, IPointerUpHand
     [SerializeField] private float forceToApply;
 
     private bool bChargeShot;
+    private bool bInputDisabled = false;
     private float curCharge = 0;
+    private CharacterSpriteController spriteController;
+    private Button button;
 
-    void Start()
+    private void Start()
     {
+        button = GetComponent<Button>();
+        Debug.Log(button.name);
         chargeBar.SetActive(false);
+        spriteController = FindAnyObjectByType<CharacterSpriteController>();
+    }
+
+    private void OnEnable()
+    {
+        button.interactable = true;
+        bInputDisabled = false;
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if(bChargeShot)
         {
@@ -32,15 +44,23 @@ public class ThrowBehaviour : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        chargeBar.SetActive(true);
-        bChargeShot = true;
+        if (!bInputDisabled)
+        {
+            chargeBar.SetActive(true);
+            bChargeShot = true;
+        }
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        bChargeShot = false;
-        chargeBar.SetActive(false);
-        ShootBall();
+        if (!bInputDisabled)
+        {
+            bChargeShot = false;
+            chargeBar.SetActive(false);
+            ShootBall();
+            button.interactable = false;
+            bInputDisabled = true;
+        }
     }
 
     private void ShootBall()
@@ -53,5 +73,6 @@ public class ThrowBehaviour : MonoBehaviour, IPointerDownHandler, IPointerUpHand
         //Reset charge bar 
         curCharge = 0;
         chargeBarFill.fillAmount = 0;
+        spriteController.ToggleSprite();
     }
 }
