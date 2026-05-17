@@ -21,14 +21,16 @@ public class ThrowBehaviour : MonoBehaviour, IPointerDownHandler, IPointerUpHand
     private void Start()
     {
         button = GetComponent<Button>();
-        Debug.Log(button.name);
         chargeBar.SetActive(false);
         spriteController = FindAnyObjectByType<CharacterSpriteController>();
     }
 
     private void OnEnable()
     {
-        button.interactable = true;
+        if (button)
+        {
+            button.interactable = true;
+        }
         bInputDisabled = false;
     }
 
